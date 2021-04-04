@@ -1,0 +1,26 @@
+
+body{
+    /* Credit: Unsplash image from mehmet turgutkirkgoz */
+    background-image: url(../img/mehmet-turgut-kirkgoz-KiqRtq8LhXY-unsplash.jpg);
+    background-repeat: repeat-x;
+    background-attachment: fixed;
+    background-size: auto;
+}
+
+
+input, button{
+    margin: .7em 0em;
+}
+
+.link-class:hover {
+    background-color: #f1f1f1;
+}
+
+
+body {
+    background-color: #1B1F2A;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+}
+
