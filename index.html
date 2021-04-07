@@ -1,668 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vaccine Go Where</title>
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,500' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
-        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/vaccineGoWhere.css">
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:400,700,500"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/vaccineGoWhere.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
     <script>
-        // window.onload
-        $(function () {
-            // Credit: https://www.plus2net.com/jquery/date-picker-difference.php
-            // what is the date of your 1st appointment?
-            var startDate;
-            var endDate;
-            $("#dateOf1stAppt").datepicker({
-                dateFormat: 'dd-mm-yy'
-            })
-
-            // what is the date of your 2nd appointment?
-            $("#dateOf2ndAppt").datepicker({
-                dateFormat: 'dd-mm-yy'
-            });
-
-            $('#dateOf1stAppt').change(function () {
-                startDate = $(this).datepicker('getDate');
-                $("#dateOf2ndAppt").datepicker("option", "minDate", startDate);
-                $("#yourVaccine").hide();
-                $("#invalidEntry").hide();
-                $("#vaccinationTable").hide();
-            })
-
-            $('#dateOf2ndAppt').change(function () {
-                endDate = $(this).datepicker('getDate');
-                $("#dateOf1stAppt").datepicker("option", "maxDate", endDate);
-                $("#yourVaccine").hide();
-                $("#invalidEntry").hide();
-                $("#vaccinationTable").hide();
-
-                var t1 = $('#dateOf1stAppt').val();
-                t1 = t1.split('-');
-
-                console.log(t1);
-                dt_t1 = new Date(t1[2], t1[1] - 1, t1[0]);                  // YYYY,mm,dd format to create date object, month need to -1
-                dt_t1_tm = dt_t1.getTime();                                 // time in milliseconds for day 1
-
-                var t2 = $('#dateOf2ndAppt').val();
-                t2 = t2.split('-');
-                dt_t2 = new Date(t2[2], t2[1] - 1, t2[0]);                  // YYYY,mm,dd format to create date object, month need to -1
-                dt_t2_tm = dt_t2.getTime();                                 // time in milliseconds for day 2
-
-                var one_day = 24 * 60 * 60 * 1000;                          // hours * minutes * seconds *milliseconds
-                var differenceInDays = Math.abs((dt_t2_tm - dt_t1_tm) / one_day)   // difference in days
-                // $("#result").html("Difference in Days " + differenceInDays + "");
-                // $("#result").show();
-
-                //
-                // As the days between the appointments are 21 days, your vaccine will be Pfizer-BioNTech
-                //
-                // As the days between the appointments are 28 days, your vaccine will be Moderna
-                var daysApartMessage = "As the days between the appointments are ";
-                var byeMessage = "<br><br>Take care. Stay safe";
-                if (differenceInDays == 28) {
-                    document.getElementById('yourVaccine').innerHTML = daysApartMessage + differenceInDays
-                        + " days, your vaccine will be " + "Moderna." + byeMessage;
-                    $("#yourVaccine").show();
-                } else if (differenceInDays == 21) {
-                    document.getElementById('yourVaccine').innerHTML = daysApartMessage + differenceInDays
-                        + " days, your vaccine will be " + "Pfizer-BioNTech." + byeMessage;
-                    $("#yourVaccine").show();
-                } else {
-                    document.getElementById('invalidEntry').innerHTML = "Please re-enter dates above";
-                    $("#invalidEntry").show();
-                }
-
-
-            })
-
-            // allow users to see list of locations sorted by Vaccine name, Locality and Address    
-            // Global var
-            // Vaccinaton centre is the primary key
-            var distribution = {
-                "Raffles City Convention Centre":
-                {
-                    "vaccinationLocation": "Raffles City Convention Centre",
-                    "address": "252 North Bridge Road, Singapore 179103, Level 4 Orchard Room",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Tanjong Pagar Community Club":
-                {
-                    "vaccinationLocation": "Tanjong Pagar Community Club",
-                    "address": "101 Cantonment Road, Singapore 089774",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Jalan Besar Community Club":
-                {
-                    "vaccinationLocation": "Jalan Besar Community Club",
-                    "address": "69 Jellicoe Road, Singapore 208737",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Bishan Community Club":
-                {
-                    "vaccinationLocation": "Bishan Community Club",
-                    "address": "51 Bishan Street 13, Singapore 579799",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Queenstown Community Centre":
-                {
-                    "vaccinationLocation": "Queenstown Community Centre",
-                    "address": "365 Commonwealth Avenue, Singapore 149732",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Toa Payoh West Community Club":
-                {
-                    "vaccinationLocation": "Toa Payoh West Community Club",
-                    "address": "200 Lorong 2 Toa Payoh, Singapore 319642",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Radin Mas Community Club":
-                {
-                    "vaccinationLocation": "Radin Mas Community Club",
-                    "address": "1 Telok Blangah Crescent, Singapore 098915",
-                    "locality": "Central",
-                    "vaccineName": "Moderna"
-                },
-                "Buona Vista Community Club":
-                {
-                    "vaccinationLocation": "Buona Vista Community Club",
-                    "address": "36 Holland Drive, Singapore 270036",
-                    "locality": "Central",
-                    "vaccineName": "Moderna"
-                },
-                "Changi Airport Terminal 4":
-                {
-                    "vaccinationLocation": "Changi Airport Terminal 4",
-                    "address": "10 Airport Boulevard #01-01 Passenger Building Terminal 4 Singapore 819665",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Marine Parade Community Club":
-                {
-                    "vaccinationLocation": "Marine Parade Community Club",
-                    "address": "278 Marine Parade Road, Singapore 449282",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Geylang Serai Community Club":
-                {
-                    "vaccinationLocation": "Geylang Serai Community Club",
-                    "address": "1 Engku Aman Turn, #01-01, Wisma Geylang Serai, Singapore 408528",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Bedok Community Centre":
-                {
-                    "vaccinationLocation": "Bedok Community Centre",
-                    "address": "850 New Upper Changi Road, Singapore 467352",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Pasir Ris Elias Community Club":
-                {
-                    "vaccinationLocation": "Pasir Ris Elias Community Club",
-                    "address": "93 Pasir Ris Drive 3, Singapore 519498",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Arena@ Our Tampines Hub (Hockey Court)":
-                {
-                    "vaccinationLocation": "Arena@ Our Tampines Hub (Hockey Court)",
-                    "address": "1 Tampines Walk, Singapore 528523",
-                    "locality": "East",
-                    "vaccineName": "Moderna"
-                },
-                "Woodlands Galaxy Community Club":
-                {
-                    "vaccinationLocation": "Woodlands Galaxy Community Club",
-                    "address": "31 Woodlands Avenue 6, Singapore 738991",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Teck Ghee Community Club":
-                {
-                    "vaccinationLocation": "Teck Ghee Community Club",
-                    "address": "861 Ang Mo Kio Avenue 10, Singapore 569734",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Senja-Cashew Community Club":
-                {
-                    "vaccinationLocation": "Senja-Cashew Community Club",
-                    "address": "101 Bukit Panjang Road, Singapore 679910",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Canberra Community Club":
-                {
-                    "vaccinationLocation": "Canberra Community Club",
-                    "address": "2 Sembawang Crescent, Singapore 757632",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Bukit Timah Community Club":
-                {
-                    "vaccinationLocation": "Bukit Timah Community Club",
-                    "address": "20 Toh Yi Drive, Singapore 596569",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Nee Soon East Community Club":
-                {
-                    "vaccinationLocation": "Nee Soon East Community Club",
-                    "address": "1 Yishun Avenue 9, Singapore 768893",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Chua Chu Kang Community Club":
-                {
-                    "vaccinationLocation": "Chua Chu Kang Community Club",
-                    "address": "35 Teck Whye Avenue, Singapore 688892",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Hong Kah North Community Club":
-                {
-                    "vaccinationLocation": "Hong Kah North Community Club",
-                    "address": "30 Bukit Batok Street 31, Singapore 659440",
-                    "locality": "North",
-                    "vaccineName": "Moderna"
-                },
-                "Marsiling Community Club":
-                {
-                    "vaccinationLocation": "Marsiling Community Club",
-                    "address": "100 Admiralty Road, Singapore 739980",
-                    "locality": "North",
-                    "vaccineName": "Moderna"
-                },
-                "The Serangoon Community Club":
-                {
-                    "vaccinationLocation": "The Serangoon Community Club",
-                    "address": "10 Serangoon North Avenue 2, Singapore 555877",
-                    "locality": "North East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Sengkang Community Club":
-                {
-                    "vaccinationLocation": "Sengkang Community Club",
-                    "address": "2 Sengkang Square, #01-01 Sengkang Community Hub, Singapore 545025",
-                    "locality": "North East",
-                    "vaccineName": "Moderna"
-                },
-                "Punggol 21 Community Club":
-                {
-                    "vaccinationLocation": "Punggol 21 Community Club",
-                    "address": "80 Punggol Field #01-01, Singapore 828815",
-                    "locality": "North East",
-                    "vaccineName": "Moderna"
-                },
-                "Hougang Community Club":
-                {
-                    "vaccinationLocation": "Hougang Community Club",
-                    "address": "35 Hougang Avenue 3, Singapore 538840",
-                    "locality": "North East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Former Hong Kah Secondary School":
-                {
-                    "vaccinationLocation": "Former Hong Kah Secondary School",
-                    "address": "931 Jurong West Street 42, Singapore 649370",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Taman Jurong Community Club":
-                {
-                    "vaccinationLocation": "Taman Jurong Community Club",
-                    "address": "1 Yung Sheng Road, Singapore 618495",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Yuhua Community Club":
-                {
-                    "vaccinationLocation": "Yuhua Community Club",
-                    "address": "90 Boon Lay Way, Singapore 609958",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Nanyang Community Club":
-                {
-                    "vaccinationLocation": "Nanyang Community Club",
-                    "address": "60 Jurong West Street 91, Singapore 649040",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Clementi Community Centre":
-                {
-                    "vaccinationLocation": "Clementi Community Centre",
-                    "address": "220 Clementi Avenue 4, Singapore 129880",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Outram Polyclinic":
-                {
-                    "vaccinationLocation": "Outram Polyclinic",
-                    "address": "3 Second Hospital Avenue, #02-00 Health Promotion Board Building, Singapore 168937",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Queenstown Polyclinic":
-                {
-                    "vaccinationLocation": "Queenstown Polyclinic",
-                    "address": "580 Stirling Road, Singapore 148958",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Bukit Merah Polyclinic":
-                {
-                    "vaccinationLocation": "Bukit Merah Polyclinic",
-                    "address": "162 Bukit Merah Central Level 4, Singapore 150163",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Geylang Polyclinic":
-                {
-                    "vaccinationLocation": "Geylang Polyclinic",
-                    "address": "21 Geylang East Central, Singapore 389707",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Toa Payoh Polyclinic":
-                {
-                    "vaccinationLocation": "Toa Payoh Polyclinic",
-                    "address": "2003 Lorong 8 Toa Payoh Singapore 319260",
-                    "locality": "Central",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Tampines Polyclinic":
-                {
-                    "vaccinationLocation": "Tampines Polyclinic",
-                    "address": "1 Tampines Street 41, Singapore 529203",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Bedok Polyclinic":
-                {
-                    "vaccinationLocation": "Bedok Polyclinic",
-                    "address": "11 Bedok North Street 1 Heartbeat@ #02-01, #03-01, Singapore 469662",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Marine Parade Polyclinic":
-                {
-                    "vaccinationLocation": "Marine Parade Polyclinic",
-                    "address": "80 Marine Parade Central, Singapore 440080",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Pasir Ris Polyclinic":
-                {
-                    "vaccinationLocation": "Pasir Ris Polyclinic",
-                    "address": "1 Pasir Ris Drive 4, Singapore 519457",
-                    "locality": "East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Woodlands Polyclinic":
-                {
-                    "vaccinationLocation": "Woodlands Polyclinic",
-                    "address": "10 Woodlands Street 31, Singapore 738579",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Bukit Batok Polyclinic":
-                {
-                    "vaccinationLocation": "Bukit Batok Polyclinic",
-                    "address": "50 Bukit Batok West Avenue 3, Singapore 659164",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Choa Chu Kang Polyclinic":
-                {
-                    "vaccinationLocation": "Choa Chu Kang Polyclinic",
-                    "address": "2 Teck Whye Crescent, Singapore 688846",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Yishun Polyclinic":
-                {
-                    "vaccinationLocation": "Yishun Polyclinic",
-                    "address": "2 Yishun Avenue 9, Singapore 768898",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Ang Mo Kio Polyclinic":
-                {
-                    "vaccinationLocation": "Ang Mo Kio Polyclinic",
-                    "address": "21 Ang Mo Kio Central 2, Singapore 569666",
-                    "locality": "North",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Hougang Polyclinic":
-                {
-                    "vaccinationLocation": "Hougang Polyclinic",
-                    "address": "89 Hougang Avenue 4, Singapore 538829",
-                    "locality": "North East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Punggol Polyclinic":
-                {
-                    "vaccinationLocation": "Punggol Polyclinic",
-                    "address": "681 Punggol Drive, Singapore 8206819",
-                    "locality": "North East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "SengKang Polyclinic":
-                {
-                    "vaccinationLocation": "SengKang Polyclinic",
-                    "address": "2 Sengkang Square, Singapore 545025",
-                    "locality": "North East",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Pioneer Polyclinic":
-                {
-                    "vaccinationLocation": "Pioneer Polyclinic",
-                    "address": "26 Jurong West Street 61, Singapore 648201",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Clementi Polyclinic":
-                {
-                    "vaccinationLocation": "Clementi Polyclinic",
-                    "address": "451 Clementi Avenue 3, Singapore 120451",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                },
-                "Jurong Polyclinic":
-                {
-                    "vaccinationLocation": "Jurong Polyclinic",
-                    "address": "90 Jurong East Avenue 1, Singapore 609788",
-                    "locality": "West",
-                    "vaccineName": "Pfizer-BioNTech"
-                }
-            };
-
-            var distribution2 = JSON.stringify(distribution);
-            // console.dir(distribution2);
-            distribution = JSON.parse(distribution2);
-
-            function createTable(sortedDistribution) {
-                // clear table and concat variables
-                var th = "";
-                var tr = "";
-                var td = "";
-                $("table").empty();
-
-                // CREATE DYNAMIC TABLE.
-                var table = document.createElement('table');
-
-                // SET THE TABLE ID. 
-                // WE WOULD NEED THE ID TO TRAVERSE AND EXTRACT DATA FROM THE TABLE.
-                // table.setAttribute('id', 'empTable');
-                $("table").attr('id', 'empTable');
-
-                // var arrHead = new Array();
-                var arrHead = [];
-                // arrHead = ['Emp. ID', 'Emp.Name', 'Designation'];
-                arrHead = ['Name of Vaccine', 'Locality', 'Vaccination Location', 'Address'];
-
-                // var arrValue = new Array();
-                var arrValue = [];
-                // arrValue.push(['1', 'Green Field', 'Accountant']);
-                // arrValue.push(['2', 'Arun Banik', 'Project Manager']);
-                // arrValue.push(['3', 'Dewane Paul', 'Programmer']);
-
-                // need parseFloat to overcome uncaught Type error after reload data
-                $.each(sortedDistribution, function (index, value) {
-                    arrValue.push([value.vaccineName, value.locality, value.vaccinationLocation, value.address]);
-                });
-
-                var tr = table.insertRow(-1);
-
-                for (var h = 0; h < arrHead.length; h++) {
-                    var th = document.createElement('th');              // TABLE HEADER.
-                    th.className = "text-white text-center";
-                    th.innerHTML = arrHead[h];
-                    tr.appendChild(th);
-                }
-
-                for (var c = 0; c <= arrValue.length - 1; c++) {
-                    tr = table.insertRow(-1);
-
-                    for (var j = 0; j < arrHead.length; j++) {
-                        var td = document.createElement('td');          // TABLE DEFINITION.
-                        td = tr.insertCell(-1);
-                        td.innerHTML = arrValue[c][j];                  // ADD VALUES TO EACH CELL.
-                    }
-                }
-
-                // NOW CREATE AN INPUT BOX TYPE BUTTON USING createElement() METHOD.
-                // var button = document.createElement('input');
-
-                // SET INPUT ATTRIBUTE 'type' AND 'value'.
-                // button.setAttribute('type', 'button');
-                // button.setAttribute('value', 'Read Table Data');
-
-                // ADD THE BUTTON's 'onclick' EVENT.
-                // button.setAttribute('onclick', 'GetTableValues()');
-
-                // FINALLY ADD THE NEWLY CREATED TABLE AND BUTTON TO THE BODY.
-                table.className = "table table-dark table-striped table-hover";
-                table.setAttribute("id", "vaccinationTable");
-                document.body.appendChild(table);
-
-                // document.body.appendChild(button);
-            }
-
-            // https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
-            function compareValues(key, order = 'asc') {
-                return function innerSort(a, b) {
-                    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-                        // property doesn't exist on either object
-                        return 0;
-                    }
-
-                    const varA = (typeof a[key] === 'string')
-                        ? a[key].toUpperCase() : a[key];
-                    const varB = (typeof b[key] === 'string')
-                        ? b[key].toUpperCase() : b[key];
-
-                    let comparison = 0;
-                    if (varA > varB) {
-                        comparison = 1;
-                    } else if (varA < varB) {
-                        comparison = -1;
-                    }
-                    return (
-                        (order === 'desc') ? (comparison * -1) : comparison
-                    );
-                };
-            }
-
-            $(function () {
-                $("#btnSortVaccineName").click(function () {
-                    var sortedDistribution = [];
-                    $.each(distribution, function (key, value) {
-                        var distributionObject = {};
-                        distributionObject.vaccineName = value.vaccineName;
-                        distributionObject.locality = value.locality;
-                        distributionObject.vaccinationLocation = value.vaccinationLocation;
-                        distributionObject.address = value.address;
-                        // console.log(distributionObject);
-                        sortedDistribution.push(distributionObject);
-
-                    });
-                    // sort by Vaccine Name
-                    sortedDistribution.sort(compareValues('vaccineName'));
-                    // console.table(sortedDistribution);
-                    createTable(sortedDistribution);
-                    $("#vaccinationTable").show();
-                });
-
-                // sort by Locality
-                $("#btnSortLocality").click(function () {
-                    var sortedDistribution = [];
-                    $.each(distribution, function (key, value) {
-                        var distributionObject = {};
-                        distributionObject.vaccineName = value.vaccineName;
-                        distributionObject.locality = value.locality;
-                        distributionObject.vaccinationLocation = value.vaccinationLocation;
-                        distributionObject.address = value.address;
-                        // console.log(distributionObject);
-                        sortedDistribution.push(distributionObject);
-
-                    });
-                    // sort by Address A-Z
-                    sortedDistribution.sort(compareValues('locality', 'asc'));
-                    // console.table(sortedDistribution);
-                    createTable(sortedDistribution);
-                    $("#vaccinationTable").show();
-                });
-
-                // sort by Address A-Z
-                $("#btnSortAddress").click(function () {
-                    var sortedDistribution = [];
-                    $.each(distribution, function (key, value) {
-                        var distributionObject = {};
-                        distributionObject.vaccineName = value.vaccineName;
-                        distributionObject.locality = value.locality;
-                        distributionObject.vaccinationLocation = value.vaccinationLocation;
-                        distributionObject.address = value.address;
-                        // console.log(distributionObject);
-                        sortedDistribution.push(distributionObject);
-
-                    });
-                    // sort by Address A-Z
-                    sortedDistribution.sort(compareValues('address', 'asc'));
-                    // console.table(sortedDistribution);
-                    createTable(sortedDistribution);
-                    $("#vaccinationTable").show();
-                });
-            });
-
+      // window.onload
+      $(function () {
+        // Credit: https://www.plus2net.com/jquery/date-picker-difference.php
+        // what is the date of your 1st appointment?
+        var startDate;
+        var endDate;
+        $("#dateOf1stAppt").datepicker({
+          dateFormat: "dd-mm-yy"
         });
 
+        // what is the date of your 2nd appointment?
+        $("#dateOf2ndAppt").datepicker({
+          dateFormat: "dd-mm-yy"
+        });
+
+        $("#dateOf1stAppt").change(function () {
+          startDate = $(this).datepicker("getDate");
+          $("#dateOf2ndAppt").datepicker("option", "minDate", startDate);
+          $("#yourVaccine").hide();
+          $("#invalidEntry").hide();
+          $("#vaccinationTable").hide();
+        });
+
+        $("#dateOf2ndAppt").change(function () {
+          endDate = $(this).datepicker("getDate");
+          $("#dateOf1stAppt").datepicker("option", "maxDate", endDate);
+          $("#yourVaccine").hide();
+          $("#invalidEntry").hide();
+          $("#vaccinationTable").hide();
+
+          var t1 = $("#dateOf1stAppt").val();
+          t1 = t1.split("-");
+
+          console.log(t1);
+          dt_t1 = new Date(t1[2], t1[1] - 1, t1[0]); // YYYY,mm,dd format to create date object, month need to -1
+          dt_t1_tm = dt_t1.getTime(); // time in milliseconds for day 1
+
+          var t2 = $("#dateOf2ndAppt").val();
+          t2 = t2.split("-");
+          dt_t2 = new Date(t2[2], t2[1] - 1, t2[0]); // YYYY,mm,dd format to create date object, month need to -1
+          dt_t2_tm = dt_t2.getTime(); // time in milliseconds for day 2
+
+          var one_day = 24 * 60 * 60 * 1000; // hours * minutes * seconds *milliseconds
+          var differenceInDays = Math.abs((dt_t2_tm - dt_t1_tm) / one_day); // difference in days
+          // $("#result").html("Difference in Days " + differenceInDays + "");
+          // $("#result").show();
+
+          //
+          // As the days between the appointments are 21 days, your vaccine will be Pfizer-BioNTech
+          //
+          // As the days between the appointments are 28 days, your vaccine will be Moderna
+          var daysApartMessage = "As the days between the appointments are ";
+          var byeMessage = "<br><br>Take care. Stay safe";
+          if (differenceInDays == 28) {
+            document.getElementById("yourVaccine").innerHTML =
+              daysApartMessage +
+              differenceInDays +
+              " days, your vaccine will be " +
+              "Moderna." +
+              byeMessage;
+            $("#yourVaccine").show();
+          } else if (differenceInDays == 21) {
+            document.getElementById("yourVaccine").innerHTML =
+              daysApartMessage +
+              differenceInDays +
+              " days, your vaccine will be " +
+              "Pfizer-BioNTech." +
+              byeMessage;
+            $("#yourVaccine").show();
+          } else {
+            document.getElementById("invalidEntry").innerHTML =
+              "Please re-enter dates above";
+            $("#invalidEntry").show();
+          }
+        });
+
+        // allow users to see list of locations sorted by Vaccine name, Locality and Address
+        // Global var
+        // Vaccinaton centre is the primary key
+        var distribution = {
+          "Raffles City Convention Centre": {
+            vaccinationLocation: "Raffles City Convention Centre",
+            address:
+              "252 North Bridge Road, Singapore 179103, Level 4 Orchard Room",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Tanjong Pagar Community Club": {
+            vaccinationLocation: "Tanjong Pagar Community Club",
+            address: "101 Cantonment Road, Singapore 089774",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Jalan Besar Community Club": {
+            vaccinationLocation: "Jalan Besar Community Club",
+            address: "69 Jellicoe Road, Singapore 208737",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Bishan Community Club": {
+            vaccinationLocation: "Bishan Community Club",
+            address: "51 Bishan Street 13, Singapore 579799",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Queenstown Community Centre": {
+            vaccinationLocation: "Queenstown Community Centre",
+            address: "365 Commonwealth Avenue, Singapore 149732",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Toa Payoh West Community Club": {
+            vaccinationLocation: "Toa Payoh West Community Club",
+            address: "200 Lorong 2 Toa Payoh, Singapore 319642",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Radin Mas Community Club": {
+            vaccinationLocation: "Radin Mas Community Club",
+            address: "1 Telok Blangah Crescent, Singapore 098915",
+            locality: "Central",
+            vaccineName: "Moderna"
+          },
+          "Buona Vista Community Club": {
+            vaccinationLocation: "Buona Vista Community Club",
+            address: "36 Holland Drive, Singapore 270036",
+            locality: "Central",
+            vaccineName: "Moderna"
+          },
+          "Changi Airport Terminal 4": {
+            vaccinationLocation: "Changi Airport Terminal 4",
+            address:
+              "10 Airport Boulevard #01-01 Passenger Building Terminal 4 Singapore 819665",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Marine Parade Community Club": {
+            vaccinationLocation: "Marine Parade Community Club",
+            address: "278 Marine Parade Road, Singapore 449282",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Geylang Serai Community Club": {
+            vaccinationLocation: "Geylang Serai Community Club",
+            address:
+              "1 Engku Aman Turn, #01-01, Wisma Geylang Serai, Singapore 408528",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Bedok Community Centre": {
+            vaccinationLocation: "Bedok Community Centre",
+            address: "850 New Upper Changi Road, Singapore 467352",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Pasir Ris Elias Community Club": {
+            vaccinationLocation: "Pasir Ris Elias Community Club",
+            address: "93 Pasir Ris Drive 3, Singapore 519498",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Arena@ Our Tampines Hub (Hockey Court)": {
+            vaccinationLocation: "Arena@ Our Tampines Hub (Hockey Court)",
+            address: "1 Tampines Walk, Singapore 528523",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Woodlands Galaxy Community Club": {
+            vaccinationLocation: "Woodlands Galaxy Community Club",
+            address: "31 Woodlands Avenue 6, Singapore 738991",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Teck Ghee Community Club": {
+            vaccinationLocation: "Teck Ghee Community Club",
+            address: "861 Ang Mo Kio Avenue 10, Singapore 569734",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Senja-Cashew Community Club": {
+            vaccinationLocation: "Senja-Cashew Community Club",
+            address: "101 Bukit Panjang Road, Singapore 679910",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Canberra Community Club": {
+            vaccinationLocation: "Canberra Community Club",
+            address: "2 Sembawang Crescent, Singapore 757632",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Bukit Timah Community Club": {
+            vaccinationLocation: "Bukit Timah Community Club",
+            address: "20 Toh Yi Drive, Singapore 596569",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Nee Soon East Community Club": {
+            vaccinationLocation: "Nee Soon East Community Club",
+            address: "1 Yishun Avenue 9, Singapore 768893",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Chua Chu Kang Community Club": {
+            vaccinationLocation: "Chua Chu Kang Community Club",
+            address: "35 Teck Whye Avenue, Singapore 688892",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Hong Kah North Community Club": {
+            vaccinationLocation: "Hong Kah North Community Club",
+            address: "30 Bukit Batok Street 31, Singapore 659440",
+            locality: "North",
+            vaccineName: "Moderna"
+          },
+          "Marsiling Community Club": {
+            vaccinationLocation: "Marsiling Community Club",
+            address: "100 Admiralty Road, Singapore 739980",
+            locality: "North",
+            vaccineName: "Moderna"
+          },
+          "The Serangoon Community Club": {
+            vaccinationLocation: "The Serangoon Community Club",
+            address: "10 Serangoon North Avenue 2, Singapore 555877",
+            locality: "North East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Sengkang Community Club": {
+            vaccinationLocation: "Sengkang Community Club",
+            address:
+              "2 Sengkang Square, #01-01 Sengkang Community Hub, Singapore 545025",
+            locality: "North East",
+            vaccineName: "Moderna"
+          },
+          "Punggol 21 Community Club": {
+            vaccinationLocation: "Punggol 21 Community Club",
+            address: "80 Punggol Field #01-01, Singapore 828815",
+            locality: "North East",
+            vaccineName: "Moderna"
+          },
+          "Hougang Community Club": {
+            vaccinationLocation: "Hougang Community Club",
+            address: "35 Hougang Avenue 3, Singapore 538840",
+            locality: "North East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Former Hong Kah Secondary School": {
+            vaccinationLocation: "Former Hong Kah Secondary School",
+            address: "931 Jurong West Street 42, Singapore 649370",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Taman Jurong Community Club": {
+            vaccinationLocation: "Taman Jurong Community Club",
+            address: "1 Yung Sheng Road, Singapore 618495",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Yuhua Community Club": {
+            vaccinationLocation: "Yuhua Community Club",
+            address: "90 Boon Lay Way, Singapore 609958",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Nanyang Community Club": {
+            vaccinationLocation: "Nanyang Community Club",
+            address: "60 Jurong West Street 91, Singapore 649040",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Clementi Community Centre": {
+            vaccinationLocation: "Clementi Community Centre",
+            address: "220 Clementi Avenue 4, Singapore 129880",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Outram Polyclinic": {
+            vaccinationLocation: "Outram Polyclinic",
+            address:
+              "3 Second Hospital Avenue, #02-00 Health Promotion Board Building, Singapore 168937",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Queenstown Polyclinic": {
+            vaccinationLocation: "Queenstown Polyclinic",
+            address: "580 Stirling Road, Singapore 148958",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Bukit Merah Polyclinic": {
+            vaccinationLocation: "Bukit Merah Polyclinic",
+            address: "162 Bukit Merah Central Level 4, Singapore 150163",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Geylang Polyclinic": {
+            vaccinationLocation: "Geylang Polyclinic",
+            address: "21 Geylang East Central, Singapore 389707",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Toa Payoh Polyclinic": {
+            vaccinationLocation: "Toa Payoh Polyclinic",
+            address: "2003 Lorong 8 Toa Payoh Singapore 319260",
+            locality: "Central",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Tampines Polyclinic": {
+            vaccinationLocation: "Tampines Polyclinic",
+            address: "1 Tampines Street 41, Singapore 529203",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Bedok Polyclinic": {
+            vaccinationLocation: "Bedok Polyclinic",
+            address:
+              "11 Bedok North Street 1 Heartbeat@ #02-01, #03-01, Singapore 469662",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Marine Parade Polyclinic": {
+            vaccinationLocation: "Marine Parade Polyclinic",
+            address: "80 Marine Parade Central, Singapore 440080",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Pasir Ris Polyclinic": {
+            vaccinationLocation: "Pasir Ris Polyclinic",
+            address: "1 Pasir Ris Drive 4, Singapore 519457",
+            locality: "East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Woodlands Polyclinic": {
+            vaccinationLocation: "Woodlands Polyclinic",
+            address: "10 Woodlands Street 31, Singapore 738579",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Bukit Batok Polyclinic": {
+            vaccinationLocation: "Bukit Batok Polyclinic",
+            address: "50 Bukit Batok West Avenue 3, Singapore 659164",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Choa Chu Kang Polyclinic": {
+            vaccinationLocation: "Choa Chu Kang Polyclinic",
+            address: "2 Teck Whye Crescent, Singapore 688846",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Yishun Polyclinic": {
+            vaccinationLocation: "Yishun Polyclinic",
+            address: "2 Yishun Avenue 9, Singapore 768898",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Ang Mo Kio Polyclinic": {
+            vaccinationLocation: "Ang Mo Kio Polyclinic",
+            address: "21 Ang Mo Kio Central 2, Singapore 569666",
+            locality: "North",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Hougang Polyclinic": {
+            vaccinationLocation: "Hougang Polyclinic",
+            address: "89 Hougang Avenue 4, Singapore 538829",
+            locality: "North East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Punggol Polyclinic": {
+            vaccinationLocation: "Punggol Polyclinic",
+            address: "681 Punggol Drive, Singapore 8206819",
+            locality: "North East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "SengKang Polyclinic": {
+            vaccinationLocation: "SengKang Polyclinic",
+            address: "2 Sengkang Square, Singapore 545025",
+            locality: "North East",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Pioneer Polyclinic": {
+            vaccinationLocation: "Pioneer Polyclinic",
+            address: "26 Jurong West Street 61, Singapore 648201",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Clementi Polyclinic": {
+            vaccinationLocation: "Clementi Polyclinic",
+            address: "451 Clementi Avenue 3, Singapore 120451",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          },
+          "Jurong Polyclinic": {
+            vaccinationLocation: "Jurong Polyclinic",
+            address: "90 Jurong East Avenue 1, Singapore 609788",
+            locality: "West",
+            vaccineName: "Pfizer-BioNTech"
+          }
+        };
+
+        var distribution2 = JSON.stringify(distribution);
+        // console.dir(distribution2);
+        distribution = JSON.parse(distribution2);
+
+        function createTable(sortedDistribution) {
+          // clear table and concat variables
+          var th = "";
+          var tr = "";
+          var td = "";
+          $("table").empty();
+
+          // CREATE DYNAMIC TABLE.
+          var table = document.createElement("table");
+
+          // SET THE TABLE ID.
+          // WE WOULD NEED THE ID TO TRAVERSE AND EXTRACT DATA FROM THE TABLE.
+          // table.setAttribute('id', 'empTable');
+          $("table").attr("id", "empTable");
+
+          // var arrHead = new Array();
+          var arrHead = [];
+          // arrHead = ['Emp. ID', 'Emp.Name', 'Designation'];
+          arrHead = [
+            "Name of Vaccine",
+            "Locality",
+            "Vaccination Location",
+            "Address"
+          ];
+
+          // var arrValue = new Array();
+          var arrValue = [];
+          // arrValue.push(['1', 'Green Field', 'Accountant']);
+          // arrValue.push(['2', 'Arun Banik', 'Project Manager']);
+          // arrValue.push(['3', 'Dewane Paul', 'Programmer']);
+
+          // need parseFloat to overcome uncaught Type error after reload data
+          $.each(sortedDistribution, function (index, value) {
+            arrValue.push([
+              value.vaccineName,
+              value.locality,
+              value.vaccinationLocation,
+              value.address
+            ]);
+          });
+
+          var tr = table.insertRow(-1);
+
+          for (var h = 0; h < arrHead.length; h++) {
+            var th = document.createElement("th"); // TABLE HEADER.
+            th.className = "text-white text-center";
+            th.innerHTML = arrHead[h];
+            tr.appendChild(th);
+          }
+
+          for (var c = 0; c <= arrValue.length - 1; c++) {
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < arrHead.length; j++) {
+              var td = document.createElement("td"); // TABLE DEFINITION.
+              td = tr.insertCell(-1);
+              td.innerHTML = arrValue[c][j]; // ADD VALUES TO EACH CELL.
+            }
+          }
+
+          // NOW CREATE AN INPUT BOX TYPE BUTTON USING createElement() METHOD.
+          // var button = document.createElement('input');
+
+          // SET INPUT ATTRIBUTE 'type' AND 'value'.
+          // button.setAttribute('type', 'button');
+          // button.setAttribute('value', 'Read Table Data');
+
+          // ADD THE BUTTON's 'onclick' EVENT.
+          // button.setAttribute('onclick', 'GetTableValues()');
+
+          // FINALLY ADD THE NEWLY CREATED TABLE AND BUTTON TO THE BODY.
+          table.className = "table table-dark table-striped table-hover";
+          table.setAttribute("id", "vaccinationTable");
+          document.body.appendChild(table);
+
+          // document.body.appendChild(button);
+        }
+
+        // https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
+        function compareValues(key, order = "asc") {
+          return function innerSort(a, b) {
+            if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+              // property doesn't exist on either object
+              return 0;
+            }
+
+            const varA =
+              typeof a[key] === "string" ? a[key].toUpperCase() : a[key];
+            const varB =
+              typeof b[key] === "string" ? b[key].toUpperCase() : b[key];
+
+            let comparison = 0;
+            if (varA > varB) {
+              comparison = 1;
+            } else if (varA < varB) {
+              comparison = -1;
+            }
+            return order === "desc" ? comparison * -1 : comparison;
+          };
+        }
+
+        $(function () {
+          $("#btnSortVaccineName").click(function () {
+            var sortedDistribution = [];
+            $.each(distribution, function (key, value) {
+              var distributionObject = {};
+              distributionObject.vaccineName = value.vaccineName;
+              distributionObject.locality = value.locality;
+              distributionObject.vaccinationLocation =
+                value.vaccinationLocation;
+              distributionObject.address = value.address;
+              // console.log(distributionObject);
+              sortedDistribution.push(distributionObject);
+            });
+            // sort by Vaccine Name
+            sortedDistribution.sort(compareValues("vaccineName"));
+            // console.table(sortedDistribution);
+            createTable(sortedDistribution);
+            $("#vaccinationTable").show();
+          });
+
+          // sort by Locality
+          $("#btnSortLocality").click(function () {
+            var sortedDistribution = [];
+            $.each(distribution, function (key, value) {
+              var distributionObject = {};
+              distributionObject.vaccineName = value.vaccineName;
+              distributionObject.locality = value.locality;
+              distributionObject.vaccinationLocation =
+                value.vaccinationLocation;
+              distributionObject.address = value.address;
+              // console.log(distributionObject);
+              sortedDistribution.push(distributionObject);
+            });
+            // sort by Address A-Z
+            sortedDistribution.sort(compareValues("locality", "asc"));
+            // console.table(sortedDistribution);
+            createTable(sortedDistribution);
+            $("#vaccinationTable").show();
+          });
+
+          // sort by Address A-Z
+          $("#btnSortAddress").click(function () {
+            var sortedDistribution = [];
+            $.each(distribution, function (key, value) {
+              var distributionObject = {};
+              distributionObject.vaccineName = value.vaccineName;
+              distributionObject.locality = value.locality;
+              distributionObject.vaccinationLocation =
+                value.vaccinationLocation;
+              distributionObject.address = value.address;
+              // console.log(distributionObject);
+              sortedDistribution.push(distributionObject);
+            });
+            // sort by Address A-Z
+            sortedDistribution.sort(compareValues("address", "asc"));
+            // console.table(sortedDistribution);
+            createTable(sortedDistribution);
+            $("#vaccinationTable").show();
+          });
+        });
+      });
     </script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="container">
-        <div class="text-white text-left ml-0">
-            <h1>Vaccine Go Where</h1>
-            <h4>Enter dates below to confirm which vaccine will be administered as per your appointment</h4>
+      <div class="text-white text-left ml-0">
+        <h1>Vaccine Go Where</h1>
+        <h4>
+          Enter dates below to confirm which vaccine will be administered as per
+          your appointment
+        </h4>
 
-            <div class="row">
-                <div class="col-md-6 text-left">
-                    <h4><input type="text" id="dateOf1stAppt" placeholder="1st Appointment Date"></h4>
-                </div>
-                <div class="col-md-6 text-left">
-                    <h4><input type="text" id="dateOf2ndAppt" placeholder="2nd Appointment Date"></h4>
-                </div>
-            </div>
-
-
-            <h2 id="invalidEntry"></h2>
-            <h2 id="yourVaccine"></h2>
-
-            <hr>
-            <h4>Click buttons for your preference</h4>
-        </div>
         <div class="row">
-            <div class="col-md-4 text-left">
-                <button type="button" class="btn btn-outline-light mt-2" id="btnSortVaccineName"
-                    value="sortVaccineName">Vaccine
-                    <i class="fas fa-syringe"></i>&nbsp;&nbsp;<i class="fas fa-sort-alpha-up"></i></button>
-            </div>
-            <div class="col-md-4 text-left">
-                <button type="button" class="btn btn-outline-light mt-2" id="btnSortLocality"
-                    value="sortLocality">Locality
-                    <i class="far fa-compass"></i>&nbsp;&nbsp;<i class="fas fa-sort-alpha-up"></i></button>
-            </div>
-            <div class="col-md-4 text-left">
-                <button type="button" class="btn btn-outline-light mt-2" id="btnSortAddress" value="sortAddress">Address
-                    <i class="far fa-address-card"></i>&nbsp;&nbsp;<i class="fas fa-sort-alpha-up"></i></button>
-            </div>
+          <div class="col-md-6 text-left">
+            <h4>
+              <input
+                type="text"
+                id="dateOf1stAppt"
+                placeholder="1st Appointment Date"
+              />
+            </h4>
+          </div>
+          <div class="col-md-6 text-left">
+            <h4>
+              <input
+                type="text"
+                id="dateOf2ndAppt"
+                placeholder="2nd Appointment Date"
+              />
+            </h4>
+          </div>
         </div>
-        <div id="vaccinationTable">
 
+        <h2 id="invalidEntry"></h2>
+        <h2 id="yourVaccine"></h2>
+
+        <hr />
+        <h4>Click buttons for your preference</h4>
+      </div>
+      <div class="row">
+        <div class="col-md-4 text-left">
+          <button
+            type="button"
+            class="btn btn-outline-light mt-2"
+            id="btnSortVaccineName"
+            value="sortVaccineName"
+          >
+            Vaccine <i class="fas fa-syringe"></i>&nbsp;&nbsp;<i
+              class="fas fa-sort-alpha-up"
+            ></i>
+          </button>
         </div>
+        <div class="col-md-4 text-left">
+          <button
+            type="button"
+            class="btn btn-outline-light mt-2"
+            id="btnSortLocality"
+            value="sortLocality"
+          >
+            Locality <i class="far fa-compass"></i>&nbsp;&nbsp;<i
+              class="fas fa-sort-alpha-up"
+            ></i>
+          </button>
+        </div>
+        <div class="col-md-4 text-left">
+          <button
+            type="button"
+            class="btn btn-outline-light mt-2"
+            id="btnSortAddress"
+            value="sortAddress"
+          >
+            Address <i class="far fa-address-card"></i>&nbsp;&nbsp;<i
+              class="fas fa-sort-alpha-up"
+            ></i>
+          </button>
+        </div>
+      </div>
+      <div id="vaccinationTable"></div>
     </div>
-
-
-</body>
-
+  </body>
 </html>
